@@ -2,7 +2,7 @@ import { PawPrintIcon } from 'lucide-react';
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between py-4 px-10 bg-base-200 text-black">
+    <header className="flex items-center justify-between py-4 px-10 bg-base-100 text-black">
       <div className="flex flex-col justify-center items-center">
         <PawPrintIcon />
         <h1 className="text-2xl font-extrabold">PetHelp</h1>

@@ -1,8 +1,7 @@
-import Header from "./layout/Header";
-
+import Header from './layout/Header';
 
 export default function Home() {
-  return(
+  return (
     <>
       <Header />
     </>
