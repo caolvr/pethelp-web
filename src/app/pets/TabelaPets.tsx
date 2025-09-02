@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Edit, PlusIcon } from 'lucide-react';
+import { Edit, PlusIcon, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -15,10 +15,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import React, { useEffect, useState } from 'react';
-import { getPets } from '@/app/services/PetsService';
+import { getPets, deletePet } from '@/app/services/PetsService';
 import { error } from 'console';
 import Pet from '../models/Pet';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 function formatDate(iso?: string) {
   if (!iso) return '-';
@@ -43,6 +44,22 @@ export default function TabelaPets({ onEdit }: Props) {
 
   const handleClickCadastrar = () => {
     router.push('/pets/cadastro');
+  };
+
+  const handleClickEdit = (id: string) => {
+    router.push(`/pets/editar/${id}`);
+  };
+
+  const handleClickDelete = (id: string) => {
+    deletePet(id)
+      .then(res => {
+        setPets(prev => prev.filter(pet => pet.id !== id));
+        toast.success('Registro deletado com sucesso!');
+      })
+      .catch(err => {
+        console.error('Erro ao deletar registro:', err);
+        toast.error('Erro ao deletar registro. Tente novamente.');
+      });
   };
 
   return (
@@ -124,12 +141,24 @@ export default function TabelaPets({ onEdit }: Props) {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => onEdit?.(pet)}
+                    onClick={() => handleClickEdit(pet.id)}
                     aria-label={`Editar ${pet.nome}`}
-                    className="inline-flex items-center gap-2"
+                    className="inline-flex items-center gap-2 hover:cursor-pointer"
                   >
                     <Edit size={16} />
                     <span className="sr-only">Editar</span>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      handleClickDelete(pet.id);
+                    }}
+                    aria-label={`Deletar ${pet.nome}`}
+                    className="inline-flex items-center gap-2 hover:cursor-pointer"
+                  >
+                    <Trash2 size={16} className="text-red-600" />
+                    <span className="sr-only">Deletar</span>
                   </Button>
                 </TableCell>
               </TableRow>

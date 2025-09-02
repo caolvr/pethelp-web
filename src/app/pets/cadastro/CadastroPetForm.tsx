@@ -22,48 +22,80 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { InputFile } from '@/app/components/inputs/InputFile';
 import { CameraIcon } from 'lucide-react';
+import { createPet, updatePet } from '@/app/services/PetsService';
+import Pet from '@/app/models/Pet';
+import { useEffect } from 'react';
+
+type CadastroPetFormProps = {
+  initialData?: Pet;
+};
 
 const FormSchema = z.object({
-  nome: z.string(),
-  especie: z.string(),
-  sexo: z.string(),
-  porte: z.string(),
+  nome: z
+    .string()
+    .min(1, 'O nome é obrigatório')
+    .max(50, 'O nome pode ter no máximo 50 caracteres'),
+  especie: z.enum(['cao', 'gato']),
+  sexo: z.enum(['macho', 'femea']),
+  porte: z.enum(['pequeno', 'medio', 'grande']),
   idade: z.string(),
-  infos_adicionais: z.string().optional(),
-  foto: z.string().optional(),
+  informacoes: z.string().optional(),
+  foto_url: z.string().optional(),
 });
 
-export function CadastroPetForm() {
+export function CadastroPetForm({ initialData }: CadastroPetFormProps) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      nome: '',
-      especie: '',
-      sexo: '',
-      porte: '',
-      idade: '',
-      infos_adicionais: '',
-      foto: '',
+      nome: initialData?.nome || '',
+      especie:
+        initialData?.especie === 'cao' || initialData?.especie === 'gato'
+          ? initialData.especie
+          : undefined,
+      sexo:
+        initialData?.sexo === 'macho' || initialData?.sexo === 'femea'
+          ? initialData.sexo
+          : undefined,
+      porte:
+        initialData?.porte === 'pequeno' ||
+        initialData?.porte === 'medio' ||
+        initialData?.porte === 'grande'
+          ? initialData.porte
+          : undefined,
+      idade: initialData?.idade || '',
+      informacoes: initialData?.informacoes || '',
+      foto_url: initialData?.foto_url || '',
     },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    alert('Form submitted successfully!');
-    console.log('Form Data:', data);
-    toast('You submitted the following values', {
-      description: (
-        <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    if (initialData) {
+      updatePet({ id: initialData.id, ...data })
+        .then(() => {
+          toast.success('Pet atualizado com sucesso!');
+        })
+        .catch(err => {
+          console.error('Erro ao atualizar pet:', err);
+          toast.error('Erro ao atualizar pet. Tente novamente.');
+        });
+    } else {
+      createPet(data)
+        .then(() => {
+          toast.success('Pet cadastrado com sucesso!');
+          form.reset();
+        })
+        .catch(err => {
+          console.error('Erro ao cadastrar pet:', err);
+          toast.error('Erro ao cadastrar pet. Tente novamente.');
+        });
+    }
   }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg font-bold text-center">
-          Cadastro de pet
+          {initialData ? 'Editar Pet' : 'Cadastrar Pet'}
         </CardTitle>
       </CardHeader>
       <Form {...form}>
@@ -74,7 +106,7 @@ export function CadastroPetForm() {
           <div className="flex items-start justify-center mb-4">
             <FormField
               control={form.control}
-              name="foto"
+              name="foto_url"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -186,7 +218,7 @@ export function CadastroPetForm() {
               />
               <FormField
                 control={form.control}
-                name="infos_adicionais"
+                name="informacoes"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Informações adicionais</FormLabel>
