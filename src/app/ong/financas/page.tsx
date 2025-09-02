@@ -60,13 +60,28 @@ export default function HomePage() {
         </div>
 
         <div>
-          <span className="block text-sm font-medium">Categoria</span>
-          <Select defaultValue="todas">
+          <span className="block text-sm font-medium">Tipo</span>
+          <Select defaultValue="receita">
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Selecione" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todas">Todas</SelectItem>
+              <SelectItem value="receita">Receita</SelectItem>
+              <SelectItem value="despesa">Despesa</SelectItem>
+              <SelectItem value="a-pagar">A pagar</SelectItem>
+              <SelectItem value="a-receber">A receber</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <span className="block text-sm font-medium">Categoria</span>
+          <Select defaultValue="selecione">
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Selecione" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="selecione">Selecione</SelectItem>
               <SelectItem value="doacao">Doação</SelectItem>
               <SelectItem value="vendas">Vendas</SelectItem>
             </SelectContent>
